@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { BookOpen, ShoppingCart, ArrowRight, Loader } from "lucide-react";
+import { Package, ShoppingCart, ArrowRight, Loader } from "lucide-react";
 
 interface Product {
   id: number;
@@ -60,10 +60,10 @@ export default function ProductsPage() {
             Our Collection
           </p>
           <h1 className="font-display text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4">
-            Books & Publications
+            Products & Services
           </h1>
           <p className="text-lg text-white/60 max-w-2xl mx-auto">
-            Discover our curated collection of books on business, sustainability, leadership, and African innovation.
+            Discover our curated range of services, courses, books, and consultancy offerings.
           </p>
         </div>
       </section>
@@ -86,18 +86,18 @@ export default function ProductsPage() {
 
           {products.length === 0 && !error && (
             <div className="text-center py-20">
-              <BookOpen size={48} className="text-navy-300 mx-auto mb-4" />
+              <Package size={48} className="text-navy-300 mx-auto mb-4" />
               <h3 className="font-display text-xl font-semibold text-navy-700 mb-2">
-                No books available yet
+                No products available yet
               </h3>
               <p className="text-navy-500 mb-4">
-                Check back soon for our upcoming publications.
+                Check back soon for our upcoming offerings.
               </p>
               <Link
                 href="/admin"
                 className="inline-flex items-center gap-2 text-gold-600 hover:text-gold-700 font-semibold"
               >
-                Add books in admin <ArrowRight size={16} />
+                Add products in admin <ArrowRight size={16} />
               </Link>
             </div>
           )}
@@ -117,7 +117,7 @@ export default function ProductsPage() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-navy-100">
-                      <BookOpen size={48} className="text-navy-300" />
+                      <Package size={48} className="text-navy-300" />
                     </div>
                   )}
                 </div>
@@ -129,7 +129,7 @@ export default function ProductsPage() {
                     {product.title}
                   </h3>
                   {product.author && (
-                    <p className="text-sm text-navy-500 mb-3">by {product.author}</p>
+                    <p className="text-sm text-navy-500 mb-3">{product.author}</p>
                   )}
                   <p className="text-sm text-navy-600 line-clamp-2 mb-4">
                     {product.description}

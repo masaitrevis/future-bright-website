@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
-  BookOpen,
+  Package,
   Plus,
   Trash2,
   LogOut,
@@ -39,7 +39,7 @@ export default function AdminPage() {
   const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("book");
+  const [category, setCategory] = useState("service");
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [bookFile, setBookFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -168,12 +168,12 @@ export default function AdminPage() {
       <div className="pt-20 min-h-screen flex items-center justify-center bg-navy-50">
         <div className="w-full max-w-md bg-white border border-navy-100 rounded-xl p-8">
           <div className="text-center mb-6">
-            <BookOpen size={40} className="text-gold-600 mx-auto mb-3" />
+            <Package size={40} className="text-gold-600 mx-auto mb-3" />
             <h1 className="font-display text-2xl font-bold text-navy-900">
               Admin Login
             </h1>
             <p className="text-sm text-navy-500">
-              Manage your books and publications
+              Manage your products and services
             </p>
           </div>
 
@@ -267,24 +267,26 @@ export default function AdminPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
-                    Title *
+                    Product Name *
                   </label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g. Driving Course, Consultancy Package..."
                     className="w-full border border-navy-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold-400"
                     required
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
-                    Author
+                    Brand / Subtitle / Author (Optional)
                   </label>
                   <input
                     type="text"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
+                    placeholder="e.g. Future Bright, 5-Day Course, John Doe..."
                     className="w-full border border-navy-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold-400"
                   />
                 </div>
@@ -322,14 +324,20 @@ export default function AdminPage() {
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full border border-navy-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold-400"
                   >
+                    <option value="service">Service</option>
+                    <option value="course">Course</option>
                     <option value="book">Book</option>
                     <option value="publication">Publication</option>
-                    <option value="guide">Guide</option>
+                    <option value="digital">Digital Product</option>
+                    <option value="physical">Physical Product</option>
+                    <option value="consultancy">Consultancy</option>
+                    <option value="training">Training</option>
+                    <option value="other">Other</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
-                    Cover Image
+                    Cover Image (Optional)
                   </label>
                   <input
                     type="file"
@@ -341,17 +349,16 @@ export default function AdminPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
-                  Book File (PDF) *
+                  Product File / Download (Optional)
                 </label>
                 <input
                   type="file"
-                  accept=".pdf"
+                  accept=".pdf,.zip,.doc,.docx"
                   onChange={(e) => setBookFile(e.target.files?.[0] || null)}
                   className="w-full text-sm text-navy-600"
-                  required
                 />
                 <p className="text-xs text-navy-400 mt-1">
-                  Upload the PDF file buyers will download after payment
+                  Upload the file buyers will download after payment (PDF, ZIP, DOC). Leave empty for services/courses.
                 </p>
               </div>
               <div className="flex gap-3">
@@ -387,9 +394,9 @@ export default function AdminPage() {
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-12 bg-white border border-navy-100 rounded-xl">
-            <BookOpen size={48} className="text-navy-300 mx-auto mb-4" />
+            <Package size={48} className="text-navy-300 mx-auto mb-4" />
             <p className="text-navy-500">
-              No products yet. Add your first book above!
+              No products yet. Add your first product above!
             </p>
           </div>
         ) : (
@@ -398,10 +405,10 @@ export default function AdminPage() {
               <thead className="bg-navy-50">
                 <tr>
                   <th className="text-left text-xs font-semibold text-navy-700 uppercase tracking-wider px-6 py-4">
-                    Book
+                    Product
                   </th>
                   <th className="text-left text-xs font-semibold text-navy-700 uppercase tracking-wider px-6 py-4">
-                    Author
+                    Brand / Subtitle
                   </th>
                   <th className="text-left text-xs font-semibold text-navy-700 uppercase tracking-wider px-6 py-4">
                     Price
@@ -427,7 +434,7 @@ export default function AdminPage() {
                           />
                         ) : (
                           <div className="w-10 h-14 bg-navy-100 rounded flex items-center justify-center">
-                            <BookOpen size={16} className="text-navy-400" />
+                            <Package size={16} className="text-navy-400" />
                           </div>
                         )}
                         <span className="font-medium text-navy-900">

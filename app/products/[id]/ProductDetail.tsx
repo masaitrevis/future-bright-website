@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { BookOpen, ArrowLeft, Loader, CheckCircle, Download } from "lucide-react";
+import { Package, ArrowLeft, Loader, CheckCircle, Download } from "lucide-react";
 
 interface Product {
   id: number;
@@ -134,7 +134,7 @@ export default function ProductDetail({ id }: { id: string }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Link href="/products" className="inline-flex items-center gap-2 text-navy-500 hover:text-navy-700 mb-8">
           <ArrowLeft size={18} />
-          Back to all books
+          Back to all products
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -148,12 +148,12 @@ export default function ProductDetail({ id }: { id: string }) {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-navy-100">
-                <BookOpen size={64} className="text-navy-300" />
+                <Package size={64} className="text-navy-300" />
               </div>
             )}
           </div>
 
-          {/* Book Details */}
+          {/* Product Details */}
           <div className="flex flex-col justify-center">
             <p className="text-gold-600 text-sm uppercase tracking-[0.25em] font-semibold mb-3">
               {product.category}
@@ -162,7 +162,7 @@ export default function ProductDetail({ id }: { id: string }) {
               {product.title}
             </h1>
             {product.author && (
-              <p className="text-lg text-navy-500 mb-4">by {product.author}</p>
+              <p className="text-lg text-navy-500 mb-4">{product.author}</p>
             )}
             <p className="text-navy-600 leading-relaxed mb-6">
               {product.description}
@@ -179,19 +179,19 @@ export default function ProductDetail({ id }: { id: string }) {
                   <h3 className="font-semibold text-green-800">Payment Successful!</h3>
                 </div>
                 <p className="text-green-700 mb-4">
-                  Your purchase is complete. Click below to download your book.
+                  Your purchase is complete. Click below to download your product.
                 </p>
                 <a
                   href={`${API_URL}/download/${downloadToken}`}
                   className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
                 >
                   <Download size={18} />
-                  Download Book
+                  Download Product
                 </a>
               </div>
             ) : (
               <div className="bg-navy-50 border border-navy-100 rounded-xl p-6">
-                <h3 className="font-semibold text-navy-900 mb-4">Purchase this Book</h3>
+                <h3 className="font-semibold text-navy-900 mb-4">Purchase This Product</h3>
 
                 {payStatus === "pending" ? (
                   <div className="text-center py-4">
