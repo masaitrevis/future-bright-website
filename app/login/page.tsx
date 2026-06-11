@@ -2,14 +2,43 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, LogIn } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, LogIn, Loader } from "lucide-react";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: email, password }),
+      });
+
+      const data = await res.json();
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        router.push("/admin");
+      } else {
+        setError(data.error || "Invalid credentials");
+      }
+    } catch (err) {
+      setError("Unable to connect to server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -74,12 +103,23 @@ export default function LoginPage() {
               </button>
             </div>
 
+            {error && (
+              <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm text-center">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full bg-navy-800 hover:bg-navy-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+              disabled={loading}
+              className="w-full bg-navy-800 hover:bg-navy-700 disabled:bg-navy-400 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              <LogIn size={18} />
-              Log In
+              {loading ? (
+                <Loader className="animate-spin" size={18} />
+              ) : (
+                <LogIn size={18} />
+              )}
+              {loading ? "Logging in..." : "Log In"}
             </button>
           </form>
 

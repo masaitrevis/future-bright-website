@@ -72,8 +72,15 @@ export default function ProductsPage() {
       <section className="py-16 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8 text-red-700 text-center">
-              {error}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8 text-center max-w-lg mx-auto">
+              <p className="text-amber-800 font-semibold mb-2">⚠️ Backend Not Connected</p>
+              <p className="text-amber-700 text-sm mb-3">
+                The products service is currently unavailable. Make sure the backend is running at:
+              </p>
+              <code className="bg-amber-100 px-2 py-1 rounded text-xs text-amber-900">{API_URL}</code>
+              <p className="text-amber-600 text-sm mt-3">
+                Admin login: <strong>admin</strong> / <strong>admin123</strong> at <Link href="/admin" className="underline">/admin</Link>
+              </p>
             </div>
           )}
 
@@ -83,9 +90,15 @@ export default function ProductsPage() {
               <h3 className="font-display text-xl font-semibold text-navy-700 mb-2">
                 No books available yet
               </h3>
-              <p className="text-navy-500">
+              <p className="text-navy-500 mb-4">
                 Check back soon for our upcoming publications.
               </p>
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-2 text-gold-600 hover:text-gold-700 font-semibold"
+              >
+                Add books in admin <ArrowRight size={16} />
+              </Link>
             </div>
           )}
 
