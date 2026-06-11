@@ -22,6 +22,7 @@ export default function ProductDetail({ id }: { id: string }) {
   const [payStatus, setPayStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
   const [checkoutRequestId, setCheckoutRequestId] = useState("");
   const [downloadToken, setDownloadToken] = useState("");
+  const [pollCount, setPollCount] = useState(0);
   const [error, setError] = useState("");
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
@@ -40,11 +41,22 @@ export default function ProductDetail({ id }: { id: string }) {
       });
   }, [id, API_URL]);
 
-  // Poll payment status
+  // Poll payment status with timeout
+  const MAX_POLLS = 40; // ~2 minutes (40 * 3 seconds)
+
   useEffect(() => {
     if (!checkoutRequestId || payStatus !== "pending") return;
 
     const interval = setInterval(() => {
+      setPollCount((c) => {
+        const newCount = c + 1;
+        if (newCount >= MAX_POLLS) {
+          clearInterval(interval);
+          return newCount;
+        }
+        return newCount;
+      });
+
       fetch(`${API_URL}/mpesa/status/${checkoutRequestId}`)
         .then((res) => res.json())
         .then((data) => {
@@ -56,6 +68,9 @@ export default function ProductDetail({ id }: { id: string }) {
             setPayStatus("failed");
             clearInterval(interval);
           }
+        })
+        .catch(() => {
+          // Silently retry on network errors
         });
     }, 3000);
 
@@ -66,6 +81,7 @@ export default function ProductDetail({ id }: { id: string }) {
     if (!phoneNumber || !product) return;
     setPaying(true);
     setPayStatus("pending");
+    setPollCount(0);
     setError("");
 
     try {
@@ -183,6 +199,22 @@ export default function ProductDetail({ id }: { id: string }) {
                     <p className="text-navy-600">
                       M-Pesa prompt sent to your phone. Please complete payment...
                     </p>
+                    {pollCount >= MAX_POLLS && (
+                      <div className="mt-4">
+                        <p className="text-sm text-navy-500 mb-3">
+                          Taking longer than expected? The callback may not have reached our server.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setPollCount(0);
+                            setPayStatus("idle");
+                          }}
+                          className="text-sm text-gold-600 hover:text-gold-700 font-medium underline"
+                        >
+                          Try again
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <>
