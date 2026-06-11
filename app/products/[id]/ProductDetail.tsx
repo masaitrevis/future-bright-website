@@ -21,6 +21,9 @@ export default function ProductDetail({ id }: { id: string }) {
   const [paying, setPaying] = useState(false);
   const [payStatus, setPayStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
   const [checkoutRequestId, setCheckoutRequestId] = useState("");
+  const [hasFile, setHasFile] = useState(false);
+  const [serviceDetails, setServiceDetails] = useState("");
+  const [mpesaReceipt, setMpesaReceipt] = useState("");
   const [downloadToken, setDownloadToken] = useState("");
   const [pollCount, setPollCount] = useState(0);
   const [error, setError] = useState("");
@@ -63,6 +66,11 @@ export default function ProductDetail({ id }: { id: string }) {
           if (data.status === "paid") {
             setPayStatus("success");
             setDownloadToken(data.downloadToken);
+            setHasFile(data.hasFile);
+            setMpesaReceipt(data.mpesaReceipt || "");
+            if (!data.hasFile) {
+              setServiceDetails(data.details || "You will receive a confirmation shortly.");
+            }
             clearInterval(interval);
           } else if (data.status === "failed") {
             setPayStatus("failed");
@@ -173,22 +181,54 @@ export default function ProductDetail({ id }: { id: string }) {
 
             {/* Payment Section */}
             {payStatus === "success" ? (
-              <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <CheckCircle className="text-green-600" size={24} />
-                  <h3 className="font-semibold text-green-800">Payment Successful!</h3>
+              hasFile ? (
+                /* Downloadable product (book, PDF, etc.) */
+                <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <CheckCircle className="text-green-600" size={24} />
+                    <h3 className="font-semibold text-green-800">Payment Successful!</h3>
+                  </div>
+                  <p className="text-green-700 mb-4">
+                    Your purchase is complete. Click below to download your product.
+                  </p>
+                  {mpesaReceipt && (
+                    <p className="text-sm text-green-600 mb-4">
+                      M-Pesa Receipt: <strong>{mpesaReceipt}</strong>
+                    </p>
+                  )}
+                  <a
+                    href={`${API_URL}/download/${downloadToken}`}
+                    className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+                  >
+                    <Download size={18} />
+                    Download Product
+                  </a>
                 </div>
-                <p className="text-green-700 mb-4">
-                  Your purchase is complete. Click below to download your product.
-                </p>
-                <a
-                  href={`${API_URL}/download/${downloadToken}`}
-                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-                >
-                  <Download size={18} />
-                  Download Product
-                </a>
-              </div>
+              ) : (
+                /* Service / No file (driving course, consultancy, etc.) */
+                <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <CheckCircle className="text-green-600" size={24} />
+                    <h3 className="font-semibold text-green-800">Payment Confirmed!</h3>
+                  </div>
+                  <p className="text-green-700 mb-4">
+                    Thank you for your purchase. Your payment has been received.
+                  </p>
+                  {mpesaReceipt && (
+                    <p className="text-sm text-green-600 mb-4">
+                      M-Pesa Receipt: <strong>{mpesaReceipt}</strong>
+                    </p>
+                  )}
+                  <div className="bg-white border border-green-200 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-navy-700">
+                      <strong>Next Steps:</strong> {serviceDetails}
+                    </p>
+                  </div>
+                  <p className="text-xs text-green-600">
+                    You will receive a confirmation call or email shortly with further instructions.
+                  </p>
+                </div>
+              )
             ) : (
               <div className="bg-navy-50 border border-navy-100 rounded-xl p-6">
                 <h3 className="font-semibold text-navy-900 mb-4">Purchase This Product</h3>
