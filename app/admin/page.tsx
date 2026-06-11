@@ -62,7 +62,7 @@ export default function AdminPage() {
   }, [token, API_URL]);
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("admin_token");
+    const savedToken = localStorage.getItem("admin_token") || localStorage.getItem("token");
     if (savedToken) {
       setToken(savedToken);
       setLoggedIn(true);
@@ -98,6 +98,7 @@ export default function AdminPage() {
     setToken("");
     setLoggedIn(false);
     localStorage.removeItem("admin_token");
+    localStorage.removeItem("token");
   };
 
   const resetForm = () => {

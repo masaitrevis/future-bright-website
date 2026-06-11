@@ -30,6 +30,7 @@ export default function LoginPage() {
 
       if (data.token) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("admin_token", data.token);
         router.push("/admin");
       } else {
         setError(data.error || "Invalid credentials");
