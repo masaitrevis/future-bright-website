@@ -19,7 +19,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
   useEffect(() => {
     fetch(`${API_URL}/products`)
