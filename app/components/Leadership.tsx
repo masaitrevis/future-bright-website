@@ -41,7 +41,7 @@ const team = [
     name: "Esther Chebet",
     role: "Head of Property & Real Estate",
     org: "Bright Homes",
-    image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300&q=80",
+    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&q=80",
   },
   {
     name: "Kevin Wambua",
@@ -53,7 +53,7 @@ const team = [
     name: "Thomas Wafula",
     role: "General Manager – Hospitality",
     org: "Future Bright Ventures",
-    image: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=300&q=80",
+    image: "https://images.pexels.com/photos/5082976/pexels-photo-5082976.jpeg?auto=compress&cs=tinysrgb&w=400",
   },
 ];
 

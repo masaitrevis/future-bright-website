@@ -90,19 +90,19 @@ export default function Footer() {
                 <Phone size={16} className="text-gold-400 mt-0.5 shrink-0" />
                 <div className="space-y-1">
                   <a
-                    href="tel:+254700460814"
+                    href="https://wa.me/254700460814" target="_blank" rel="noopener noreferrer"
                     className="block hover:text-gold-400 transition-colors"
                   >
                     +254 700 460814
                   </a>
                   <a
-                    href="tel:+254720938031"
+                    href="https://wa.me/254720938031" target="_blank" rel="noopener noreferrer"
                     className="block hover:text-gold-400 transition-colors"
                   >
                     +254 720 938031
                   </a>
                   <a
-                    href="tel:+254723755752"
+                    href="https://wa.me/254723755752" target="_blank" rel="noopener noreferrer"
                     className="block hover:text-gold-400 transition-colors"
                   >
                     +254 723 755752

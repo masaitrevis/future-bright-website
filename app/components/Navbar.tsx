@@ -50,7 +50,7 @@ export default function Navbar() {
             ))}
             <div className="flex items-center gap-3">
               <a
-                href="tel:+254700460814"
+                href="https://wa.me/254700460814" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-gold-500 hover:bg-gold-400 text-navy-950 text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
               >
                 <Phone size={14} />
@@ -86,7 +86,7 @@ export default function Navbar() {
             ))}
             <div className="flex flex-col gap-2 pt-2 border-t border-navy-100">
               <a
-                href="tel:+254700460814"
+                href="https://wa.me/254700460814" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-gold-500 hover:bg-gold-400 text-navy-950 text-sm font-semibold py-2 rounded-lg transition-colors"
               >
                 <Phone size={14} />

@@ -25,7 +25,7 @@ const subsidiaries = [
     iconColor: "text-gold-600",
   },
   {
-    icon: Home,
+    icon: null,
     title: "Bright Homes",
     desc: "Premium property management, vacation rentals & real estate solutions. Sustainable, affordable housing with a focus on community value.",
     image: "/images/logo-bright-homes.jpg",
@@ -36,7 +36,7 @@ const subsidiaries = [
     iconColor: "text-orange-600",
   },
   {
-    icon: GraduationCap,
+    icon: null,
     title: "Bright Academy",
     desc: "Training, coaching & mentorship for leaders and professionals. We build capacity through certified programs, executive coaching, and tailored leadership development.",
     image: "/images/logo-bright-academy.jpg",
@@ -149,13 +149,15 @@ export default function SubsidiariesPage() {
                       Visit Site
                     </span>
                   )}
-                  <div
-                    className={`w-12 h-12 rounded-lg ${s.color} flex items-center justify-center mb-4`}
-                  >
-                    <Icon size={24} className={s.iconColor} />
-                  </div>
+                  {Icon && (
+                    <div
+                      className={`w-12 h-12 rounded-lg ${s.color} flex items-center justify-center mb-4`}
+                    >
+                      <Icon size={24} className={s.iconColor} />
+                    </div>
+                  )}
                   {s.image && (
-                    <div className="mb-4 h-16 flex items-center justify-start">
+                    <div className="mb-4 h-20 flex items-center justify-start">
                       <img
                         src={s.image}
                         alt={s.title + " logo"}

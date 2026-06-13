@@ -25,7 +25,7 @@ export default function CTA() {
             <ArrowRight size={18} />
           </Link>
           <a
-            href="tel:+254700460814"
+            href="https://wa.me/254700460814" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold px-8 py-3 rounded-lg transition-colors"
           >
             <Phone size={18} />
