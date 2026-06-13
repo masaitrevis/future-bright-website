@@ -16,10 +16,11 @@ import {
 const subsidiaries = [
   {
     icon: Building2,
-    title: "Future Bright Consultancy",
+    title: "Bright Consultancy",
     desc: "Operations, risk management, leadership & business transformation. We partner with organizations to optimize their operations, manage risk, and lead transformative change.",
-    href: "https://future-bright-mu.vercel.app/",
-    external: true,
+    href: "#",
+    external: false,
+    hasWebsite: false,
     color: "bg-blue-50",
     iconColor: "text-blue-600",
   },
@@ -27,8 +28,9 @@ const subsidiaries = [
     icon: GraduationCap,
     title: "Bright Academy",
     desc: "Training, coaching & mentorship for leaders and professionals. We build capacity through certified programs, executive coaching, and tailored leadership development.",
-    href: "https://future-bright-mu.vercel.app/",
-    external: true,
+    href: "#",
+    external: false,
+    hasWebsite: false,
     color: "bg-amber-50",
     iconColor: "text-amber-600",
   },
@@ -36,8 +38,9 @@ const subsidiaries = [
     icon: TreePine,
     title: "Bright Eco-Farms",
     desc: "Sustainable agriculture, tree planting & green innovation. We promote environmentally friendly farming practices and large-scale reforestation initiatives.",
-    href: "https://future-bright-mu.vercel.app/",
-    external: true,
+    href: "#",
+    external: false,
+    hasWebsite: false,
     color: "bg-green-50",
     iconColor: "text-green-600",
   },
@@ -45,8 +48,9 @@ const subsidiaries = [
     icon: Plane,
     title: "Bright Tours and Travel",
     desc: "Connecting people to destinations and experiences. We curate travel experiences that showcase the beauty of East Africa while ensuring comfort and safety.",
-    href: "https://future-bright-mu.vercel.app/",
-    external: true,
+    href: "#",
+    external: false,
+    hasWebsite: false,
     color: "bg-sky-50",
     iconColor: "text-sky-600",
   },
@@ -54,27 +58,30 @@ const subsidiaries = [
     icon: Car,
     title: "Bright Elite Tours & Travels",
     desc: "Executive mobility, chauffeur services & driver training. Premium professional transport for executives, corporates, and VIP clients across Nairobi and beyond.",
-    href: "https://future-bright-mu.vercel.app/",
+    href: "https://brightelite.vercel.app",
     external: true,
+    hasWebsite: true,
     highlight: true,
     color: "bg-gold-50",
     iconColor: "text-gold-600",
   },
   {
     icon: Home,
-    title: "Bright Real Estate & Property",
-    desc: "Sustainable, affordable housing & property investment solutions. We develop residential and commercial properties with a focus on sustainability and community value.",
-    href: "https://future-bright-mu.vercel.app/",
-    external: true,
+    title: "Bright Homes",
+    desc: "Premium property management, vacation rentals & real estate solutions. Sustainable, affordable housing with a focus on community value.",
+    href: "#",
+    external: false,
+    hasWebsite: false,
     color: "bg-orange-50",
     iconColor: "text-orange-600",
   },
   {
     icon: Hotel,
-    title: "Bright Homes & Resort",
+    title: "Bright Hospitality",
     desc: "Eco-friendly accommodation for families, travellers & corporates. Our hospitality arm delivers memorable stays with minimal environmental impact.",
-    href: "https://future-bright-mu.vercel.app/",
-    external: true,
+    href: "#",
+    external: false,
+    hasWebsite: false,
     color: "bg-teal-50",
     iconColor: "text-teal-600",
   },
@@ -82,8 +89,9 @@ const subsidiaries = [
     icon: Mountain,
     title: "Outdoor Events & Team Building",
     desc: "Hiking, team retreats & nature-based leadership experiences. We design outdoor experiences that build teams, develop leaders, and reconnect people with nature.",
-    href: "https://future-bright-mu.vercel.app/",
-    external: true,
+    href: "#",
+    external: false,
+    hasWebsite: false,
     color: "bg-indigo-50",
     iconColor: "text-indigo-600",
   },
@@ -91,8 +99,9 @@ const subsidiaries = [
     icon: Heart,
     title: "Bright Foundation",
     desc: "CSR: community empowerment, education & environmental conservation. Our foundation drives social impact through scholarships, community programs, and conservation projects.",
-    href: "https://future-bright-mu.vercel.app/",
-    external: true,
+    href: "#",
+    external: false,
+    hasWebsite: false,
     color: "bg-rose-50",
     iconColor: "text-rose-600",
   },
@@ -160,14 +169,19 @@ export default function SubsidiariesPage() {
                   <p className="text-sm text-navy-600 leading-relaxed mb-4">
                     {s.desc}
                   </p>
-                  <Link
-                    href={s.href}
-                    {...linkProps}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-gold-600 hover:text-gold-700 transition-colors"
-                  >
-                    {s.external ? "Visit Website" : "Learn more"}
-                    <ArrowRight size={14} />
-                  </Link>
+                  {s.hasWebsite ? (
+                    <Link
+                      href={s.href}
+                      {...linkProps}
+                      className="inline-flex items-center gap-1 text-sm font-medium text-gold-600 hover:text-gold-700 transition-colors"
+                    >
+                      Visit Website <ArrowRight size={14} />
+                    </Link>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-sm font-medium text-navy-300">
+                      Website Coming Soon
+                    </span>
+                  )}
                 </div>
               );
             })}

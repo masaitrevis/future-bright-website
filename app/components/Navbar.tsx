@@ -22,12 +22,19 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="font-display text-lg md:text-xl font-semibold text-navy-900 tracking-tight">
-              Future Bright
-            </span>
-            <span className="hidden sm:inline font-display text-sm text-gold-500 tracking-wide">
-              Ventures Ltd
-            </span>
+            <img
+              src="/images/logo-main.jpg"
+              alt="Future Bright Ventures"
+              className="h-10 w-auto rounded"
+            />
+            <div className="flex flex-col">
+              <span className="font-display text-lg md:text-xl font-semibold text-navy-900 tracking-tight leading-tight">
+                Future Bright
+              </span>
+              <span className="hidden sm:inline font-display text-xs text-gold-500 tracking-wide leading-tight">
+                Ventures Ltd
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}
