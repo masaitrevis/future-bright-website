@@ -151,7 +151,7 @@ export default function ContactPage() {
                 </p>
                 <form action="https://api.web3forms.com/submit" method="POST" className="space-y-5">
                   <input type="hidden" name="access_key" value="5c530529-bf88-47f8-a24e-7abeec54d328" />
-                  <input type="hidden" name="redirect" value="https://future-bright-website.vercel.app/contact?sent=true" />
+                  <input type="hidden" name="redirect" value="https://future-bright-website-git-master-masaitrevis-projects.vercel.app/contact?sent=true" />
                   <input type="hidden" name="subject" value="New Contact Form Submission - Future Bright Ventures" />
                   <input type="hidden" name="from_name" value="Future Bright Ventures Website" />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
