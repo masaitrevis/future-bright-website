@@ -14,36 +14,6 @@ import {
 
 const subsidiaries = [
   {
-    icon: Building2,
-    title: "Bright Consultancy",
-    desc: "Operations, risk management, leadership & business transformation. We partner with organizations to optimize their operations, manage risk, and lead transformative change.",
-    href: "#",
-    external: false,
-    hasWebsite: false,
-    color: "bg-blue-50",
-    iconColor: "text-blue-600",
-  },
-  {
-    icon: GraduationCap,
-    title: "Bright Academy",
-    desc: "Training, coaching & mentorship for leaders and professionals. We build capacity through certified programs, executive coaching, and tailored leadership development.",
-    href: "#",
-    external: false,
-    hasWebsite: false,
-    color: "bg-amber-50",
-    iconColor: "text-amber-600",
-  },
-  {
-    icon: TreePine,
-    title: "Bright Eco-Farms",
-    desc: "Sustainable agriculture, tree planting & green innovation. We promote environmentally friendly farming practices and large-scale reforestation initiatives.",
-    href: "#",
-    external: false,
-    hasWebsite: false,
-    color: "bg-green-50",
-    iconColor: "text-green-600",
-  },
-  {
     icon: Car,
     title: "Bright Elite Tours & Travels",
     desc: "Executive mobility, chauffeur services & driver training. Premium professional transport for executives, corporates, and VIP clients across Nairobi and beyond.",
@@ -58,11 +28,43 @@ const subsidiaries = [
     icon: Home,
     title: "Bright Homes",
     desc: "Premium property management, vacation rentals & real estate solutions. Sustainable, affordable housing with a focus on community value.",
+    image: "/images/logo-bright-homes.jpg",
     href: "#",
     external: false,
     hasWebsite: false,
     color: "bg-orange-50",
     iconColor: "text-orange-600",
+  },
+  {
+    icon: GraduationCap,
+    title: "Bright Academy",
+    desc: "Training, coaching & mentorship for leaders and professionals. We build capacity through certified programs, executive coaching, and tailored leadership development.",
+    image: "/images/logo-bright-academy.jpg",
+    href: "#",
+    external: false,
+    hasWebsite: false,
+    color: "bg-amber-50",
+    iconColor: "text-amber-600",
+  },
+  {
+    icon: Building2,
+    title: "Bright Consultancy",
+    desc: "Operations, risk management, leadership & business transformation. We partner with organizations to optimize their operations, manage risk, and lead transformative change.",
+    href: "#",
+    external: false,
+    hasWebsite: false,
+    color: "bg-blue-50",
+    iconColor: "text-blue-600",
+  },
+  {
+    icon: TreePine,
+    title: "Bright Eco-Farms",
+    desc: "Sustainable agriculture, tree planting & green innovation. We promote environmentally friendly farming practices and large-scale reforestation initiatives.",
+    href: "#",
+    external: false,
+    hasWebsite: false,
+    color: "bg-green-50",
+    iconColor: "text-green-600",
   },
   {
     icon: Hotel,
@@ -117,7 +119,7 @@ export default function SubsidiariesPage() {
             Our Subsidiaries
           </h1>
           <p className="text-lg text-white/60 max-w-2xl mx-auto">
-            Nine specialized companies. One shared vision. Explore the breadth of
+            Eight specialized companies. One shared vision. Explore the breadth of
             Future Bright Ventures.
           </p>
         </div>
@@ -135,7 +137,7 @@ export default function SubsidiariesPage() {
               return (
                 <div
                   key={s.title}
-                  className={`group relative bg-white border rounded-xl p-6 md:p-8 hover:shadow-lg transition-all duration-300 ${
+                  className={`group relative bg-white border rounded-xl p-6 md:p-8 hover:shadow-lg transition-all duration-300 flex flex-col ${
                     s.highlight
                       ? "border-gold-400 shadow-md"
                       : "border-navy-100 hover:border-gold-300"
@@ -152,10 +154,19 @@ export default function SubsidiariesPage() {
                   >
                     <Icon size={24} className={s.iconColor} />
                   </div>
+                  {s.image && (
+                    <div className="mb-4 h-16 flex items-center justify-start">
+                      <img
+                        src={s.image}
+                        alt={s.title + " logo"}
+                        className="h-full w-auto object-contain"
+                      />
+                    </div>
+                  )}
                   <h3 className="font-display text-lg font-semibold text-navy-900 mb-2">
                     {s.title}
                   </h3>
-                  <p className="text-sm text-navy-600 leading-relaxed mb-4">
+                  <p className="text-sm text-navy-600 leading-relaxed mb-4 flex-grow">
                     {s.desc}
                   </p>
                   {s.hasWebsite ? (
