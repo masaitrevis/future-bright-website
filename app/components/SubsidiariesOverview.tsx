@@ -16,57 +16,72 @@ const subsidiaries = [
     icon: Plane,
     title: "Bright Elite Tours & Travels",
     desc: "Executive mobility, chauffeur services, corporate driver outsourcing & elite driver training across Kenya and East Africa.",
-    image: "/images/logo-main.jpg",
     href: "https://brightelite.vercel.app",
     hasWebsite: true,
+    color: "bg-gold-50",
+    iconColor: "text-gold-600",
+    borderColor: "border-gold-400",
+    highlight: true,
   },
   {
     icon: Home,
     title: "Bright Homes",
     desc: "Premium property management, vacation rentals, and real estate solutions. Unleash your wanderlust with curated stays.",
-    image: "/images/bright-homes-room.jpg",
     href: "#",
     hasWebsite: false,
+    color: "bg-orange-50",
+    iconColor: "text-orange-600",
+    borderColor: "border-navy-100",
   },
   {
     icon: GraduationCap,
     title: "Bright Academy",
     desc: "Elite training and leadership development. Building the next generation of certified professionals through world-class education.",
-    image: "/images/logo-bright-academy.jpg",
     href: "#",
     hasWebsite: false,
+    color: "bg-amber-50",
+    iconColor: "text-amber-600",
+    borderColor: "border-navy-100",
   },
   {
     icon: Building2,
     title: "Bright Consultancy",
     desc: "Operations, risk management, leadership & business transformation advisory services.",
-    image: null,
     href: "#",
     hasWebsite: false,
+    color: "bg-blue-50",
+    iconColor: "text-blue-600",
+    borderColor: "border-navy-100",
   },
   {
     icon: TreePine,
     title: "Bright Eco-Farms",
     desc: "Sustainable agriculture, tree planting & green innovation for a better tomorrow.",
-    image: null,
     href: "#",
     hasWebsite: false,
+    color: "bg-green-50",
+    iconColor: "text-green-600",
+    borderColor: "border-navy-100",
   },
   {
     icon: Mountain,
     title: "Outdoor Events & Team Building",
     desc: "Hiking, team retreats & nature-based leadership experiences across East Africa.",
-    image: null,
     href: "#",
     hasWebsite: false,
+    color: "bg-indigo-50",
+    iconColor: "text-indigo-600",
+    borderColor: "border-navy-100",
   },
   {
     icon: Heart,
     title: "Bright Foundation",
     desc: "CSR: community empowerment, education & environmental conservation.",
-    image: null,
     href: "#",
     hasWebsite: false,
+    color: "bg-rose-50",
+    iconColor: "text-rose-600",
+    borderColor: "border-navy-100",
   },
 ];
 
@@ -93,48 +108,43 @@ export default function SubsidiariesOverview() {
             return (
               <div
                 key={s.title}
-                className="group bg-white border border-navy-100 rounded-xl overflow-hidden hover:shadow-lg hover:border-gold-300 transition-all duration-300 flex flex-col"
+                className={`group relative bg-white border rounded-xl p-6 md:p-8 hover:shadow-lg transition-all duration-300 ${
+                  s.highlight
+                    ? `${s.borderColor} shadow-md`
+                    : `${s.borderColor} hover:border-gold-300`
+                }`}
               >
-                {s.image ? (
-                  <div className="h-48 overflow-hidden bg-navy-50 flex items-center justify-center p-4">
-                    <img
-                      src={s.image}
-                      alt={s.title}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-48 bg-navy-50 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full bg-navy-100 flex items-center justify-center">
-                      <Icon
-                        size={32}
-                        className="text-navy-600"
-                      />
-                    </div>
-                  </div>
+                {s.highlight && (
+                  <span className="absolute top-4 right-4 inline-flex items-center gap-1 text-xs font-semibold bg-gold-100 text-gold-700 px-2 py-1 rounded-full">
+                    <ExternalLink size={12} />
+                    Visit Site
+                  </span>
                 )}
-                <div className="p-6 md:p-8 flex flex-col flex-grow">
-                  <h3 className="font-display text-lg font-semibold text-navy-900 mb-2">
-                    {s.title}
-                  </h3>
-                  <p className="text-sm text-navy-600 leading-relaxed mb-4 flex-grow">
-                    {s.desc}
-                  </p>
-                  {s.hasWebsite ? (
-                    <Link
-                      href={s.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm font-medium text-gold-600 hover:text-gold-700 transition-colors"
-                    >
-                      Visit Website <ExternalLink size={14} />
-                    </Link>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-sm font-medium text-navy-300">
-                      Website Coming Soon
-                    </span>
-                  )}
+                <div
+                  className={`w-12 h-12 rounded-lg ${s.color} flex items-center justify-center mb-4`}
+                >
+                  <Icon size={24} className={s.iconColor} />
                 </div>
+                <h3 className="font-display text-lg font-semibold text-navy-900 mb-2">
+                  {s.title}
+                </h3>
+                <p className="text-sm text-navy-600 leading-relaxed mb-4">
+                  {s.desc}
+                </p>
+                {s.hasWebsite ? (
+                  <Link
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-gold-600 hover:text-gold-700 transition-colors"
+                  >
+                    Visit Website <ExternalLink size={14} />
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-sm font-medium text-navy-300">
+                    Website Coming Soon
+                  </span>
+                )}
               </div>
             );
           })}
