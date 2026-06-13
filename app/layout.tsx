@@ -3,6 +3,10 @@ import Footer from "./components/Footer";
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { initDatabase } from "@/db/init";
+
+// Initialize database on app start
+initDatabase().catch(console.error);
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({
