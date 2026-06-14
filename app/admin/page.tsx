@@ -40,8 +40,7 @@ export default function AdminPage() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("service");
-  const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [bookFile, setBookFile] = useState<File | null>(null);
+  const [coverImage, setCoverImage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -50,15 +49,20 @@ export default function AdminPage() {
   const fetchProducts = useCallback(() => {
     if (!token) return;
     setLoading(true);
-    fetch(`${API_URL}/products`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_URL}/products`)
       .then((res) => res.json())
       .then((data) => {
-        setProducts(data);
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          setProducts([]);
+        }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setProducts([]);
+        setLoading(false);
+      });
   }, [token, API_URL]);
 
   useEffect(() => {
@@ -106,9 +110,8 @@ export default function AdminPage() {
     setAuthor("");
     setDescription("");
     setPrice("");
-    setCategory("book");
-    setCoverFile(null);
-    setBookFile(null);
+    setCategory("service");
+    setCoverImage("");
     setShowForm(false);
   };
 
@@ -119,20 +122,18 @@ export default function AdminPage() {
     setSubmitting(true);
     setMessage("");
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("author", author);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("category", category);
-    if (coverFile) formData.append("cover", coverFile);
-    if (bookFile) formData.append("book", bookFile);
-
     try {
       const res = await fetch(`${API_URL}/products`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          author,
+          description,
+          price: parseFloat(price),
+          category,
+          cover_image: coverImage || null,
+        }),
       });
       const data = await res.json();
       if (data.id) {
@@ -153,10 +154,7 @@ export default function AdminPage() {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      await fetch(`${API_URL}/products/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await fetch(`${API_URL}/products/${id}`, { method: "DELETE" });
       fetchProducts();
     } catch {
       setMessage("Failed to delete");
@@ -242,7 +240,7 @@ export default function AdminPage() {
         </div>
 
         {message && (
-          <div className="bg-green-50 text-green-700 p-3 rounded-lg mb-6 text-sm">
+          <div className={`p-3 rounded-lg mb-6 text-sm ${message.includes("success") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
             {message}
           </div>
         )}
@@ -286,7 +284,7 @@ export default function AdminPage() {
                     type="text"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
-                    placeholder="e.g. Future Bright, 5-Day Course, John Doe..."
+                    placeholder="e.g. Future Bright, 5-Day Course..."
                     className="w-full border border-navy-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold-400"
                   />
                 </div>
@@ -337,29 +335,16 @@ export default function AdminPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
-                    Cover Image (Optional)
+                    Cover Image URL (Optional)
                   </label>
                   <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
-                    className="w-full text-sm text-navy-600"
+                    type="url"
+                    value={coverImage}
+                    onChange={(e) => setCoverImage(e.target.value)}
+                    placeholder="https://example.com/image.jpg"
+                    className="w-full border border-navy-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold-400"
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
-                  Product File / Download (Optional)
-                </label>
-                <input
-                  type="file"
-                  accept=".pdf,.zip,.doc,.docx"
-                  onChange={(e) => setBookFile(e.target.files?.[0] || null)}
-                  className="w-full text-sm text-navy-600"
-                />
-                <p className="text-xs text-navy-400 mt-1">
-                  Upload the file buyers will download after payment (PDF, ZIP, DOC). Leave empty for services/courses.
-                </p>
               </div>
               <div className="flex gap-3">
                 <button
@@ -428,7 +413,7 @@ export default function AdminPage() {
                       <div className="flex items-center gap-3">
                         {product.cover_image ? (
                           <img
-                            src={`${API_URL.replace("/api", "")}${product.cover_image}`}
+                            src={product.cover_image}
                             alt={product.title}
                             className="w-10 h-14 object-cover rounded"
                           />
