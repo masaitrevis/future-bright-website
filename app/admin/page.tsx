@@ -40,7 +40,8 @@ export default function AdminPage() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("service");
-  const [coverImage, setCoverImage] = useState("");
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [bookFile, setBookFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -110,8 +111,9 @@ export default function AdminPage() {
     setAuthor("");
     setDescription("");
     setPrice("");
-    setCategory("service");
-    setCoverImage("");
+    setCategory("book");
+    setCoverFile(null);
+    setBookFile(null);
     setShowForm(false);
   };
 
@@ -121,6 +123,26 @@ export default function AdminPage() {
 
     setSubmitting(true);
     setMessage("");
+
+    // Convert files to base64 for JSON transport
+    let coverBase64 = null;
+    let fileBase64 = null;
+
+    if (coverFile) {
+      coverBase64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(coverFile);
+      });
+    }
+
+    if (bookFile) {
+      fileBase64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(bookFile);
+      });
+    }
 
     try {
       const res = await fetch(`${API_URL}/products`, {
@@ -132,7 +154,8 @@ export default function AdminPage() {
           description,
           price: parseFloat(price),
           category,
-          cover_image: coverImage || null,
+          cover_image: coverBase64,
+          file_path: fileBase64,
         }),
       });
       const data = await res.json();
@@ -284,7 +307,7 @@ export default function AdminPage() {
                     type="text"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
-                    placeholder="e.g. Future Bright, 5-Day Course..."
+                    placeholder="e.g. Future Bright, 5-Day Course, John Doe..."
                     className="w-full border border-navy-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold-400"
                   />
                 </div>
@@ -335,16 +358,29 @@ export default function AdminPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
-                    Cover Image URL (Optional)
+                    Cover Image (Optional)
                   </label>
                   <input
-                    type="url"
-                    value={coverImage}
-                    onChange={(e) => setCoverImage(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full border border-navy-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold-400"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
+                    className="w-full text-sm text-navy-600"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
+                  Product File / Download (Optional)
+                </label>
+                <input
+                  type="file"
+                  accept=".pdf,.zip,.doc,.docx"
+                  onChange={(e) => setBookFile(e.target.files?.[0] || null)}
+                  className="w-full text-sm text-navy-600"
+                />
+                <p className="text-xs text-navy-400 mt-1">
+                  Upload the file buyers will download after payment (PDF, ZIP, DOC). Leave empty for services/courses.
+                </p>
               </div>
               <div className="flex gap-3">
                 <button
