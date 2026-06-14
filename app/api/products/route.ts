@@ -9,8 +9,6 @@ export async function GET() {
     return NextResponse.json(allProducts);
   } catch (error: any) {
     console.error("[API /products] Error:", error.message);
-    console.error("[API /products] POSTGRES_URL set?", !!process.env.POSTGRES_URL);
-    console.error("[API /products] DATABASE_URL set?", !!process.env.DATABASE_URL);
     return NextResponse.json(
       { error: "Failed to fetch products", detail: error.message },
       { status: 500 }

@@ -1,17 +1,16 @@
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
 import * as schema from "./schema";
 
 const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL || "";
 
 if (!connectionString) {
-  console.error("[DB] ERROR: No connection string found. POSTGRES_URL or DATABASE_URL must be set.");
+  console.error("[DB] ERROR: No POSTGRES_URL or DATABASE_URL env var set");
 }
 
-const client = postgres(connectionString, {
-  prepare: false,
-  ssl: connectionString.includes("render.com") ? "require" : false,
-  max: 1,
+const pool = new Pool({
+  connectionString,
+  ssl: connectionString.includes("render.com") ? { rejectUnauthorized: false } : false,
 });
 
-export const db = drizzle(client, { schema });
+export const db = drizzle(pool, { schema });

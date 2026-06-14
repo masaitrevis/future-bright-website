@@ -3,7 +3,6 @@ import { sql } from "drizzle-orm";
 
 export async function initDatabase() {
   try {
-    // Check if products table exists
     const result = await db.execute(sql`
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
@@ -15,7 +14,7 @@ export async function initDatabase() {
     const tableExists = result[0]?.exists;
 
     if (!tableExists) {
-      console.log("Creating products table...");
+      console.log("[DB] Creating products table...");
       await db.execute(sql`
         CREATE TABLE products (
           id SERIAL PRIMARY KEY,
@@ -30,11 +29,11 @@ export async function initDatabase() {
           created_at TIMESTAMP DEFAULT NOW()
         );
       `);
-      console.log("Products table created successfully!");
+      console.log("[DB] Products table created!");
     } else {
-      console.log("Products table already exists.");
+      console.log("[DB] Products table already exists.");
     }
-  } catch (error) {
-    console.error("Database init error:", error);
+  } catch (error: any) {
+    console.error("[DB] Init error:", error.message);
   }
 }
