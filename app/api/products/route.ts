@@ -7,10 +7,12 @@ export async function GET() {
   try {
     const allProducts = await db.select().from(products).orderBy(desc(products.created_at));
     return NextResponse.json(allProducts);
-  } catch (error) {
-    console.error("Error fetching products:", error);
+  } catch (error: any) {
+    console.error("[API /products] Error:", error.message);
+    console.error("[API /products] POSTGRES_URL set?", !!process.env.POSTGRES_URL);
+    console.error("[API /products] DATABASE_URL set?", !!process.env.DATABASE_URL);
     return NextResponse.json(
-      { error: "Failed to fetch products" },
+      { error: "Failed to fetch products", detail: error.message },
       { status: 500 }
     );
   }
@@ -42,10 +44,10 @@ export async function POST(request: Request) {
       .returning();
 
     return NextResponse.json(newProduct[0], { status: 201 });
-  } catch (error) {
-    console.error("Error creating product:", error);
+  } catch (error: any) {
+    console.error("[API /products] POST Error:", error.message);
     return NextResponse.json(
-      { error: "Failed to create product" },
+      { error: "Failed to create product", detail: error.message },
       { status: 500 }
     );
   }
