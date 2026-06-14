@@ -18,7 +18,7 @@ export async function query(text: string, params?: any[]) {
 }
 
 export async function initDb() {
-  // Check if table exists and has correct schema
+  // Check if products table exists and has correct schema
   const tableCheck = await query(`
     SELECT EXISTS (
       SELECT FROM information_schema.tables 
@@ -48,7 +48,7 @@ export async function initDb() {
     }
   }
   
-  // Create table with full schema
+  // Create products table with full schema
   await query(`
     CREATE TABLE IF NOT EXISTS products (
       id SERIAL PRIMARY KEY,
@@ -92,6 +92,22 @@ export async function initDb() {
       await query(`ALTER TABLE products ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`);
     }
   }
+  
+  // Create orders table for M-Pesa payments
+  await query(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id SERIAL PRIMARY KEY,
+      product_id INTEGER NOT NULL,
+      phone_number TEXT NOT NULL,
+      mpesa_receipt TEXT,
+      checkout_request_id TEXT,
+      amount DECIMAL(10,2) NOT NULL,
+      status VARCHAR(20) NOT NULL DEFAULT 'pending',
+      download_token TEXT,
+      download_expires_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 }
 
 export default pool;
