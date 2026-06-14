@@ -1,33 +1,31 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { products } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { query, initDb } from "@/db/client";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    await initDb();
     const id = parseInt(params.id);
     if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
-    const product = await db
-      .select()
-      .from(products)
-      .where(eq(products.id, id))
-      .limit(1);
+    const result = await query(
+      "SELECT * FROM products WHERE id = $1 AND status = 'active'",
+      [id]
+    );
 
-    if (product.length === 0) {
+    if (result.rows.length === 0) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    return NextResponse.json(product[0]);
-  } catch (error) {
-    console.error("Error fetching product:", error);
+    return NextResponse.json(result.rows[0]);
+  } catch (error: any) {
+    console.error("[API /products/:id] GET Error:", error.message);
     return NextResponse.json(
-      { error: "Failed to fetch product" },
+      { error: "Failed to fetch product", detail: error.message },
       { status: 500 }
     );
   }
@@ -38,17 +36,65 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    await initDb();
     const id = parseInt(params.id);
     if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
-    await db.delete(products).where(eq(products.id, id));
+    await query(
+      "UPDATE products SET status = 'inactive' WHERE id = $1",
+      [id]
+    );
+
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting product:", error);
+  } catch (error: any) {
+    console.error("[API /products/:id] DELETE Error:", error.message);
     return NextResponse.json(
-      { error: "Failed to delete product" },
+      { error: "Failed to delete product", detail: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await initDb();
+    const id = parseInt(params.id);
+    if (isNaN(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
+
+    const body = await request.json();
+    const result = await query(
+      `UPDATE products
+       SET title = $1, author = $2, description = $3, price = $4, category = $5, cover_image = $6, file_path = $7
+       WHERE id = $8
+       RETURNING *`,
+      [
+        body.title,
+        body.author || null,
+        body.description || null,
+        body.price?.toString() || null,
+        body.category || "service",
+        body.cover_image || null,
+        body.file_path || null,
+        id,
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(result.rows[0]);
+  } catch (error: any) {
+    console.error("[API /products/:id] PUT Error:", error.message);
+    return NextResponse.json(
+      { error: "Failed to update product", detail: error.message },
       { status: 500 }
     );
   }

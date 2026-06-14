@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { products } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { query, initDb } from "@/db/client";
 
 export async function GET() {
   try {
-    const allProducts = await db.select().from(products).orderBy(desc(products.created_at));
-    return NextResponse.json(allProducts);
+    await initDb();
+    const result = await query(
+      "SELECT * FROM products WHERE status = 'active' ORDER BY created_at DESC"
+    );
+    return NextResponse.json(result.rows);
   } catch (error: any) {
-    console.error("[API /products] Error:", error.message);
+    console.error("[API /products] GET Error:", error.message);
     return NextResponse.json(
       { error: "Failed to fetch products", detail: error.message },
       { status: 500 }
@@ -18,30 +19,32 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    await initDb();
     const body = await request.json();
-    
-    if (!body.title || !body.price) {
+
+    if (!body.title || body.price === undefined) {
       return NextResponse.json(
         { error: "Title and price are required" },
         { status: 400 }
       );
     }
 
-    const newProduct = await db
-      .insert(products)
-      .values({
-        title: body.title,
-        author: body.author || null,
-        description: body.description || null,
-        price: body.price.toString(),
-        category: body.category || "service",
-        cover_image: body.cover_image || null,
-        file_path: body.file_path || null,
-        status: "active",
-      })
-      .returning();
+    const result = await query(
+      `INSERT INTO products (title, author, description, price, category, cover_image, file_path, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'active')
+       RETURNING *`,
+      [
+        body.title,
+        body.author || null,
+        body.description || null,
+        body.price.toString(),
+        body.category || "service",
+        body.cover_image || null,
+        body.file_path || null,
+      ]
+    );
 
-    return NextResponse.json(newProduct[0], { status: 201 });
+    return NextResponse.json(result.rows[0], { status: 201 });
   } catch (error: any) {
     console.error("[API /products] POST Error:", error.message);
     return NextResponse.json(
