@@ -45,7 +45,7 @@ export default function AdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+  const API_URL = "/api";
 
   const fetchProducts = useCallback(() => {
     if (!token) return;
