@@ -17,7 +17,7 @@ const subsidiaries = [
     icon: Car,
     title: "Bright Elite Tours & Travels",
     desc: "Executive mobility, chauffeur services & driver training. Premium professional transport for executives, corporates, and VIP clients across Nairobi and beyond.",
-    href: "https://brightelite.vercel.app",
+    href: "https://future-bright-mu.vercel.app",
     external: true,
     hasWebsite: true,
     highlight: true,

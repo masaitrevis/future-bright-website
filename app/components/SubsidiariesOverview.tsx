@@ -16,7 +16,7 @@ const subsidiaries = [
     icon: Car,
     title: "Bright Elite Tours & Travels",
     desc: "Executive mobility, chauffeur services, corporate driver outsourcing & elite driver training across Kenya and East Africa.",
-    href: "https://brightelite.vercel.app",
+    href: "https://future-bright-mu.vercel.app",
     hasWebsite: true,
     color: "bg-gold-50",
     iconColor: "text-gold-600",
