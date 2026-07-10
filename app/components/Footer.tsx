@@ -65,7 +65,7 @@ export default function Footer() {
                 { name: "Future Bright Consultancy", url: "https://future-bright-consultancy.com" },
                 { name: "Bright Academy", url: "https://bright-academy-kappa.vercel.app/" },
                 { name: "Bright Eco-Farms", url: "https://bright-eco-farms.com" },
-                { name: "Bright Tours & Travel", url: "https://bright-tours.com" },
+                { name: "Bright Tours & Travel", url: "https://future-bright-mu.vercel.app/" },
                 { name: "Bright Elite Tours & Travels", url: "https://bright-elite-tours.com" },
                 { name: "Bright Real Estate & Property", url: "https://bright-real-estate.com" },
                 { name: "Bright Homes & Resort", url: "https://bright-homes.com" },

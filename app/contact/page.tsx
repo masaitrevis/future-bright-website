@@ -209,16 +209,16 @@ export default function ContactPage() {
                       }}
                       className="w-full bg-white border border-navy-200 rounded-lg px-4 py-2.5 text-sm text-navy-900 focus:outline-none focus:border-gold-400 transition-colors appearance-none cursor-pointer"
                     >
-                      <option value="">Quick Links ▼</option>
-                      <option value="https://bright-academy-kappa.vercel.app/">Bright Academy ↗</option>
-                      <option value="https://future-bright-consultancy.com/">Future Bright Consultancy ↗</option>
-                      <option value="https://bright-eco-farms.com/">Bright Eco-Farms ↗</option>
-                      <option value="https://bright-tours.com/">Bright Tours & Travel ↗</option>
-                      <option value="https://bright-elite-tours.com/">Bright Elite Tours & Travels ↗</option>
-                      <option value="https://bright-real-estate.com/">Bright Real Estate & Property ↗</option>
-                      <option value="https://bright-homes.com/">Bright Homes & Resort ↗</option>
-                      <option value="https://bright-events.com/">Outdoor Events & Team Building ↗</option>
-                      <option value="https://bright-foundation.com/">Bright Foundation ↗</option>
+                      <option value="">select ▼</option>
+                      <option>Bright Academy</option>
+                      <option>Future Bright Consultancy</option>
+                      <option>Bright Eco-Farms</option>
+                      <option>Bright Elite Tours & Travels </option>
+                      <option>Bright Elite Tours & Travels ↗</option>
+                      <option>Bright Real Estate & Property ↗</option>
+                      <option>Bright Homes & Resort ↗</option>
+                      <option>Outdoor Events & Team Building ↗</option>
+                      <option>Bright Foundation ↗</option>
                     </select>
                   </div>
                   <div>
