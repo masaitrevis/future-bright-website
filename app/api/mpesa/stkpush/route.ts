@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 import { query, initDb } from "@/db/client";
 
 const MPESA_CONFIG = {
-  consumerKey: process.env.MPESA_CONSUMER_KEY || "jcGRefnxvQa6igVinxR2e06yQgx5PDJpQfKHm2oUKidOHleL",
-  consumerSecret: process.env.MPESA_CONSUMER_SECRET || "iDgUGL2pw7egV1ci2Jec8pYwrE5suzOGJiKlGtvc4pOhKXuyiEhi6NStno4JefPD",
+  consumerKey: process.env.MPESA_CONSUMER_KEY || "JYImEIJDh95uBcbmjCrFIYZYx14qGTIlXWKqUIuDaY2G1xAg",
+  consumerSecret: process.env.MPESA_CONSUMER_SECRET || "yAllZh1Dg2VOGA9zwqKqRtFSvaHTT6QDfzpyBY9Aosai6u5B2YZfpcGTmAQgoddS",
   passkey: process.env.MPESA_PASSKEY || "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919",
   shortcode: process.env.MPESA_SHORTCODE || "174379",
   businessShortcode: process.env.MPESA_BUSINESS_SHORTCODE || "174379",
