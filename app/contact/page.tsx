@@ -198,17 +198,17 @@ export default function ContactPage() {
                     <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
                       Interest
                     </label>
-                    <select name="interest" className="w-full bg-white border border-navy-200 rounded-lg px-4 py-2.5 text-sm text-navy-900 focus:outline-none focus:border-gold-400 transition-colors appearance-none">
-                      <option>General Inquiry</option>
-                      <option>Future Bright Consultancy</option>
-                      <option>Bright Academy</option>
-                      <option>Bright Eco-Farms</option>
-                      <option>Bright Tours and Travel</option>
-                      <option>Bright Elite Tours & Travels</option>
-                      <option>Bright Real Estate & Property</option>
-                      <option>Bright Homes & Resort</option>
-                      <option>Outdoor Events & Team Building</option>
-                      <option>Bright Foundation</option>
+                   <select onchange="if(this.value) { window.open(this.value, '_blank'); this.selectedIndex = 0; }"className="w-full bg-white border border-navy-200 rounded-lg px-4 py-2.5 text-sm text-navy-900 focus:outline-none focus:border-gold-400 transition-colors appearance-none cursor-pointer">
+                      <option value="">Quick Links ▼</option>
+                      <option value="https://bright-academy-kappa.vercel.app/">Bright Academy ↗</option>
+                      <option value="https://future-bright-consultancy.com/">Future Bright Consultancy ↗</option>
+                      <option value="https://bright-eco-farms.com/">Bright Eco-Farms ↗</option>
+                      <option value="https://bright-tours.com/">Bright Tours and Travel ↗</option>
+                      <option value="https://bright-elite-tours.com/">Bright Elite Tours & Travels ↗</option>
+                      <option value="https://bright-real-estate.com/">Bright Real Estate & Property ↗</option>
+                      <option value="https://bright-homes.com/">Bright Homes & Resort ↗</option>
+                      <option value="https://bright-events.com/">Outdoor Events & Team Building ↗</option>
+                      <option value="https://bright-foundation.com/">Bright Foundation ↗</option>
                     </select>
                   </div>
                   <div>

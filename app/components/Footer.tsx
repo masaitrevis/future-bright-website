@@ -62,18 +62,25 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2">
               {[
-                "Future Bright Consultancy",
-                "Bright Academy",
-                "Bright Eco-Farms",
-                "Bright Tours & Travel",
-                "Bright Elite Tours & Travels",
-                "Bright Real Estate & Property",
-                "Bright Homes & Resort",
-                "Outdoor Events & Team Building",
-                "Bright Foundation",
+                { name: "Future Bright Consultancy", url: "https://future-bright-consultancy.com" },
+                { name: "Bright Academy", url: "https://bright-academy-kappa.vercel.app/" },
+                { name: "Bright Eco-Farms", url: "https://bright-eco-farms.com" },
+                { name: "Bright Tours & Travel", url: "https://bright-tours.com" },
+                { name: "Bright Elite Tours & Travels", url: "https://bright-elite-tours.com" },
+                { name: "Bright Real Estate & Property", url: "https://bright-real-estate.com" },
+                { name: "Bright Homes & Resort", url: "https://bright-homes.com" },
+                { name: "Outdoor Events & Team Building", url: "https://bright-events.com" },
+                { name: "Bright Foundation", url: "https://bright-foundation.com" },
               ].map((s) => (
-                <li key={s} className="text-sm text-white/60">
-                  {s}
+                <li key={s.name}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-white/60 hover:text-gold-400 transition-colors duration-200"
+                  >
+                    {s.name}
+                  </a>
                 </li>
               ))}
             </ul>
