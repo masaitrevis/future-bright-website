@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Phone,
   Mail,
@@ -200,7 +202,7 @@ export default function ContactPage() {
                     </label>
                     <select
                       onChange={(e) => {
-                        if (e.target.value && typeof window !== 'undefined') {
+                        if (e.target.value) {
                           window.open(e.target.value, '_blank');
                           e.target.selectedIndex = 0;
                         }
