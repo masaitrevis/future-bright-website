@@ -44,7 +44,41 @@ export async function GET(
       });
     }
 
-    // For downloadable products, return info about the file
+    // Check if file_path is a base64 data URI
+    if (order.file_path.startsWith("data:")) {
+      // Extract mime type and base64 data
+      const matches = order.file_path.match(/^data:([^;]+);base64,(.+)$/);
+      
+      if (matches) {
+        const mimeType = matches[1]; // e.g., "application/pdf"
+        const base64Data = matches[2];
+        
+        // Convert base64 to buffer
+        const buffer = Buffer.from(base64Data, "base64");
+        
+        // Return as downloadable file
+        return new NextResponse(buffer, {
+          headers: {
+            "Content-Type": mimeType,
+            "Content-Disposition": `attachment; filename="${order.title.replace(/[^a-zA-Z0-9]/g, "_")}.pdf"`,
+            "Content-Length": buffer.length.toString(),
+          },
+        });
+      }
+    }
+
+    // If it's a URL (external storage like S3, Cloudinary, etc.)
+    if (order.file_path.startsWith("http")) {
+      // Redirect to the file URL
+      return NextResponse.redirect(order.file_path);
+    }
+
+    // If it's a local file path (not recommended for serverless)
+    // You would need to read the file from filesystem here
+    // const fileBuffer = await fs.readFile(order.file_path);
+    // return new NextResponse(fileBuffer, {...});
+
+    // Fallback: return JSON if we can't handle the file type
     return NextResponse.json({
       type: "download",
       message: "Payment confirmed!",
