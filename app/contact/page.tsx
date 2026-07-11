@@ -209,16 +209,15 @@ export default function ContactPage() {
                       }}
                       className="w-full bg-white border border-navy-200 rounded-lg px-4 py-2.5 text-sm text-navy-900 focus:outline-none focus:border-gold-400 transition-colors appearance-none cursor-pointer"
                     >
-                      <option value="">select ▼</option>
+                      <option>select ▼</option>
                       <option>Bright Academy</option>
                       <option>Future Bright Consultancy</option>
                       <option>Bright Eco-Farms</option>
                       <option>Bright Elite Tours & Travels </option>
-                      <option>Bright Elite Tours & Travels ↗</option>
-                      <option>Bright Real Estate & Property ↗</option>
-                      <option>Bright Homes & Resort ↗</option>
-                      <option>Outdoor Events & Team Building ↗</option>
-                      <option>Bright Foundation ↗</option>
+                      <option>Bright Real Estate & Property</option>
+                      <option>Bright Homes & Resort</option>
+                      <option>Outdoor Events & Team Building</option>
+                      <option>Bright Foundation</option>
                     </select>
                   </div>
                   <div>
