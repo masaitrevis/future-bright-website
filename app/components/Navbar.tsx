@@ -13,7 +13,7 @@ export default function Navbar() {
     { href: "/subsidiaries", label: "Subsidiaries" },
     { href: "/products", label: "Products" },
     { href: "/contact", label: "Contact" },
-    { href: "/admin", label: "Admin" },
+    
   ];
 
   return (

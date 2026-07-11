@@ -168,13 +168,7 @@ export default function Footer() {
                 Explore our thought leadership, research papers, and industry
                 insights shaping East African business.
               </p>
-              <button
-                type="button"
-                onClick={() => alert("Coming soon — subscribe to be notified.")}
-                className="mt-2 inline-flex items-center gap-1 text-xs text-gold-400 hover:text-gold-300 transition-colors"
-              >
-                View Publications <ArrowRight size={12} />
-              </button>
+             
             </div>
           </div>
         </div>
