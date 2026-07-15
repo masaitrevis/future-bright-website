@@ -142,7 +142,7 @@ export default function ProductsPage() {
                       KES {product.price.toLocaleString()}
                     </span>
                     <Link
-                      href={/${product.id}`}
+                      href={`/products/${product.id}`}
                       className="inline-flex items-center gap-2 bg-navy-800 hover:bg-navy-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
                     >
                       Buy Now
