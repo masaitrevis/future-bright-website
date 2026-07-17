@@ -67,17 +67,7 @@ const subsidiaries = [
     color: "bg-green-50",
     iconColor: "text-green-600",
   },
-  {
-    icon: Hotel,
-    title: "Bright Hospitality",
-    desc: "Eco-friendly accommodation for families, travellers & corporates. Our hospitality arm delivers memorable stays with minimal environmental impact.",
-    href: "#",
-    external: false,
-    hasWebsite: false,
-    color: "bg-teal-50",
-    iconColor: "text-teal-600",
-  },
-  
+ 
   {
     icon: Heart,
     title: "Bright Foundation",
