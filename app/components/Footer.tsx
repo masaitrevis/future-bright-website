@@ -55,25 +55,57 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Subsidiaries */}
+        {/* Subsidiaries */}
           <div>
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Subsidiaries
             </h4>
+          
             <ul className="space-y-2">
               {[
-                "Future Bright Consultancy",
-                "Bright Academy",
-                "Bright Eco-Farms",
-                "Bright Tours & Travel",
-                "Bright Elite Tours & Travels",
-                "Bright Real Estate & Property",
-                "Bright Homes & Resort",
-                "Outdoor Events & Team Building",
-                "Bright Foundation",
-              ].map((s) => (
-                <li key={s} className="text-sm text-white/60">
-                  {s}
+                {
+                  name: "Future Bright Consultancy",
+                  url: "https://futurebrightconsultancy.com",
+                },
+                {
+                  name: "Bright Academy",
+                  url: "https://bright-academy-kappa.vercel.app/",
+                },
+                {
+                  name: "Bright Eco-Farms",
+                  url: "https://brightecofarms.com",
+                },
+                
+                {
+                  name: "Bright Elite Tours & Travels",
+                  url: "https://brightelitetours.com",
+                },
+                {
+                  name: "Bright Real Estate & Property",
+                  url: "https://brightrealestate.com",
+                },
+                {
+                  name: "Bright Homes & Resort",
+                  url: "https://brighthomesresort.com",
+                },
+                {
+                  name: "Outdoor Events & Team Building",
+                  url: "https://outdoorevents.com",
+                },
+                {
+                  name: "Bright Foundation",
+                  url: "https://brightfoundation.org",
+                },
+              ].map((subsidiary) => (
+                <li key={subsidiary.name}>
+                  <a
+                    href={subsidiary.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-white/60 hover:text-white hover:underline transition-colors"
+                  >
+                    {subsidiary.name}
+                  </a>
                 </li>
               ))}
             </ul>
