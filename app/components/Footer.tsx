@@ -63,10 +63,7 @@ export default function Footer() {
           
             <ul className="space-y-2">
               {[
-                {
-                  name: "Future Bright Consultancy",
-                  url: "https://futurebrightconsultancy.com",
-                },
+               
                 {
                   name: "Bright Academy",
                   url: "https://bright-academy-kappa.vercel.app/",
@@ -78,7 +75,7 @@ export default function Footer() {
                 
                 {
                   name: "Bright Elite Tours & Travels",
-                  url: "https://brightelitetours.com",
+                  url: "https://future-bright-mu.vercel.app",
                 },
                 {
                   name: "Bright Real Estate & Property",
