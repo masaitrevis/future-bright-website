@@ -38,7 +38,7 @@ const subsidiaries = [
     desc: "Elite training and leadership development. Building the next generation of certified professionals through world-class education.",
     image: "/images/logo-bright-academy.jpg",
     href: "https://bright-academy-kappa.vercel.app/",
-    hasWebsite: false,
+    hasWebsite: true,
     color: "bg-amber-50",
     iconColor: "text-amber-600",
   },
