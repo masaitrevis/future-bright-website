@@ -193,8 +193,7 @@ export default function AdminPage() {
             <h1 className="font-display text-2xl font-bold text-navy-900">
               Admin Login
             </h1>
-            <p><a href="https://j24pd7scg7cto.kimi.page/"> Manage Tenders</a>
-            </p>
+           
             <p className="text-sm text-navy-500">
               Manage your products and services
             </p>
@@ -254,6 +253,8 @@ export default function AdminPage() {
             <h1 className="font-display text-2xl font-bold text-navy-900">
               Admin Dashboard
             </h1>
+            <p><a href="https://j24pd7scg7cto.kimi.page/"> Manage Tenders</a>
+            </p>
           </div>
           <button
             onClick={handleLogout}
