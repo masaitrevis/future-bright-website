@@ -10,6 +10,7 @@ import {
   Loader,
   CheckCircle,
   ArrowLeft,
+  FileText, // Added for tenders icon
 } from "lucide-react";
 
 interface Product {
@@ -253,8 +254,16 @@ export default function AdminPage() {
             <h1 className="font-display text-2xl font-bold text-navy-900">
               Admin Dashboard
             </h1>
-            <p><a href="https://j24pd7scg7cto.kimi.page/"> Manage Tenders</a>
-            </p>
+            {/* MANAGE TENDERS LINK ADDED HERE */}
+            <a
+              href="https://j24pd7scg7cto.kimi.page/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-600 hover:text-gold-700 bg-gold-50 hover:bg-gold-100 px-3 py-1.5 rounded-lg transition-colors border border-gold-200"
+            >
+              <FileText size={16} />
+              Manage Tenders
+            </a>
           </div>
           <button
             onClick={handleLogout}
