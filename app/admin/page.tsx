@@ -256,7 +256,7 @@ export default function AdminPage() {
             </h1>
             {/* MANAGE TENDERS LINK ADDED HERE */}
             <a
-              href="https://j24pd7scg7cto.kimi.page/"
+              href="https://fbv-tender-system.onrender.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-600 hover:text-gold-700 bg-gold-50 hover:bg-gold-100 px-3 py-1.5 rounded-lg transition-colors border border-gold-200"
