@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { query, initDb } from "@/db/client";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -9,15 +10,18 @@ export async function GET() {
     );
     return NextResponse.json(result.rows);
   } catch (error: any) {
-    console.error("[API /products] GET Error:", error.message);
+    console.error("[API /products] GET Error:", error instanceof Error ? error.message : "unknown error");
     return NextResponse.json(
-      { error: "Failed to fetch products", detail: error.message },
+      { error: "Failed to fetch products" },
       { status: 500 }
     );
   }
 }
 
 export async function POST(request: Request) {
+  const unauthorized = requireAdmin(request);
+  if (unauthorized) return unauthorized;
+
   try {
     await initDb();
     const body = await request.json();
@@ -46,9 +50,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result.rows[0], { status: 201 });
   } catch (error: any) {
-    console.error("[API /products] POST Error:", error.message);
+    console.error("[API /products] POST Error:", error instanceof Error ? error.message : "unknown error");
     return NextResponse.json(
-      { error: "Failed to create product", detail: error.message },
+      { error: "Failed to create product" },
       { status: 500 }
     );
   }

@@ -44,9 +44,14 @@ Add:
 
 | Name | Value |
 |------|-------|
-| `POSTGRES_URL` | `postgresql://future_bright_db_user:password@dpg-xxxxxxxx.render.com:5432/future_bright_db` |
+| `POSTGRES_URL` | `postgresql://<db-user>:<db-password>@dpg-xxxxxxxx.render.com:5432/<db-name>` |
+| `ADMIN_USERNAME` | `<your admin username>` |
+| `ADMIN_PASSWORD_HASH` | `<scrypt saltHex:hashHex — see .env.example for the generator command>` |
+| `ADMIN_TOKEN_SECRET` | `<long random string>` |
+| `APP_BASE_URL` | `https://<your-site>.onrender.com` |
 
-Click **Save**.
+See `.env.example` for the full list of required variables (database, app,
+NCBA payments, admin). Click **Save**.
 
 ### 4. Push Schema to Database (One-time)
 
@@ -83,10 +88,10 @@ After deployment, test:
 # Get all products
 curl https://your-site.vercel.app/api/products
 
-# Login (returns token)
+# Login (returns token + expiresAt) — uses your ADMIN_* env credentials
 curl -X POST https://your-site.vercel.app/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
+  -d '{"username":"<your admin username>","password":"<your admin password>"}'
 
 # Add a product (use token from above)
 curl -X POST https://your-site.vercel.app/api/products \
@@ -97,23 +102,30 @@ curl -X POST https://your-site.vercel.app/api/products \
 
 ## Admin Login
 
-- **Username**: `admin`
-- **Password**: `admin123`
-- Go to `/admin` on your site
+Admin credentials are configured exclusively via environment variables —
+there are no hardcoded credentials anywhere in the code:
+
+- `ADMIN_USERNAME` — login username
+- `ADMIN_PASSWORD_HASH` — scrypt hash in `saltHex:hashHex` format (preferred;
+  generate with the command shown in `.env.example`)
+- `ADMIN_PASSWORD` — plaintext fallback (timing-safe compare; the server logs
+  a warning if this is used instead of the hash)
+- `ADMIN_TOKEN_SECRET` — HMAC secret for signing 8-hour admin tokens
+
+Go to `/admin` on your site and log in with the values you set.
 
 ## What's NOT Included (Yet)
 
 These features still need the separate backend (or future work):
 
 1. **File uploads** (cover images, product files) - Currently not handled. Consider using Cloudinary, AWS S3, or Uploadcare for image hosting.
-2. **M-Pesa payments** - The STK push and callback logic needs a backend with persistent storage for payment states.
-3. **Proper JWT auth** - Currently using hardcoded token.
+2. **NCBA payment onboarding** - The payment endpoints are built in; you still need live NCBA credentials (`NCBA_*` env vars) from the bank.
 
 ## Next Steps
 
 1. **Images**: For product images, use Cloudinary (free tier) or upload to `/public/images/products/` manually.
-2. **M-Pesa**: If you need payments, deploy the separate backend on Render with the same database URL.
-3. **Auth**: Add a proper users table with bcrypt passwords instead of hardcoded login.
+2. **Payments**: Configure the `NCBA_*` environment variables (see `.env.example`) once NCBA issues your API and notification credentials.
+3. **Auth**: Prefer `ADMIN_PASSWORD_HASH` (scrypt) over the `ADMIN_PASSWORD` plaintext fallback, and rotate `ADMIN_TOKEN_SECRET` if it is ever exposed.
 
 ## Troubleshooting
 
@@ -123,8 +135,11 @@ These features still need the separate backend (or future work):
 - Check Render dashboard - is the database "Available"?
 
 ### "Authentication failed"
-- The hardcoded login is `admin` / `admin123`
+- Verify `ADMIN_USERNAME` and `ADMIN_PASSWORD_HASH` (or `ADMIN_PASSWORD`) are
+  set correctly in your environment variables, and `ADMIN_TOKEN_SECRET` is set
 - Make sure you're sending JSON: `Content-Type: application/json`
+- After 5 failed attempts from one IP within 5 minutes, login is temporarily
+  rate limited (HTTP 429) — wait a few minutes and retry
 
 ### Database connection errors
 - Render free tier databases sleep after 15 min of inactivity. First request may take 10-30 seconds to wake up.

@@ -1,54 +1,67 @@
-import { Pool } from "pg";
+/**
+ * Postgres client (Render Postgres via `pg` Pool) + additive migrations.
+ *
+ * - `query()` is the shared parameterized-query helper.
+ * - `migrate()` is memoized (runs once per process), ADDITIVE ONLY — it never
+ *   drops tables/columns. Safe to call at the top of every route handler.
+ * - TLS: `DATABASE_CA_CERT` (PEM) => strict verification; otherwise, for
+ *   render.com hosts only, `rejectUnauthorized:false` with a one-time warning
+ *   (Render proxy constraint).
+ */
+
+import { Pool, type QueryResult, type QueryResultRow } from "pg";
 
 const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL || "";
 
+let sslWarningLogged = false;
+
+function buildSsl(): false | { ca?: string; rejectUnauthorized: boolean } {
+  const caCert = process.env.DATABASE_CA_CERT;
+  if (caCert) {
+    return { ca: caCert, rejectUnauthorized: true };
+  }
+  if (connectionString.includes("render.com")) {
+    if (!sslWarningLogged) {
+      console.warn(
+        "[db] DATABASE_CA_CERT not set; using ssl.rejectUnauthorized=false for " +
+          "render.com host (Render proxy constraint). Set DATABASE_CA_CERT to " +
+          "enable full certificate verification."
+      );
+      sslWarningLogged = true;
+    }
+    return { rejectUnauthorized: false };
+  }
+  return false;
+}
+
 const pool = new Pool({
   connectionString,
-  ssl: connectionString.includes("render.com") ? { rejectUnauthorized: false } : false,
+  ssl: buildSsl(),
 });
 
-export async function query(text: string, params?: any[]) {
+export async function query<T extends QueryResultRow = QueryResultRow>(
+  text: string,
+  params?: unknown[]
+): Promise<QueryResult<T>> {
+  if (!connectionString) {
+    // Clear server-side log; route handlers surface only generic errors.
+    console.error("[db] POSTGRES_URL is not set — cannot run query");
+    throw new Error("Database is not configured");
+  }
   const client = await pool.connect();
   try {
-    const result = await client.query(text, params);
-    return result;
+    return await client.query<T>(text, params as never[] | undefined);
   } finally {
     client.release();
   }
 }
 
-export async function initDb() {
-  // Check if products table exists and has correct schema
-  const tableCheck = await query(`
-    SELECT EXISTS (
-      SELECT FROM information_schema.tables 
-      WHERE table_name = 'products' AND table_schema = 'public'
-    );
-  `);
-  
-  const tableExists = tableCheck.rows[0].exists;
-  let needsRecreate = false;
-  
-  if (tableExists) {
-    const cols = await query(`
-      SELECT column_name 
-      FROM information_schema.columns 
-      WHERE table_name = 'products' AND table_schema = 'public'
-    `);
-    const columnNames = cols.rows.map((r: any) => r.column_name);
-    
-    // Check if core columns are missing (old schema)
-    const requiredColumns = ['id', 'title', 'price', 'status', 'created_at'];
-    const missingCore = requiredColumns.filter(c => !columnNames.includes(c));
-    
-    if (missingCore.length > 0) {
-      console.log(`[DB] Table missing core columns: ${missingCore.join(', ')}. Recreating...`);
-      needsRecreate = true;
-      await query(`DROP TABLE products CASCADE`);
-    }
-  }
-  
-  // Create products table with full schema
+// ---------------------------------------------------------------------------
+// Migrations — additive only, NEVER drop. Memoized to run once per process.
+// ---------------------------------------------------------------------------
+
+async function runMigrations(): Promise<void> {
+  // --- products ------------------------------------------------------------
   await query(`
     CREATE TABLE IF NOT EXISTS products (
       id SERIAL PRIMARY KEY,
@@ -63,37 +76,19 @@ export async function initDb() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  
-  // If table already existed with good schema, add any missing optional columns
-  if (!needsRecreate && tableExists) {
-    const cols = await query(`
-      SELECT column_name 
-      FROM information_schema.columns 
-      WHERE table_name = 'products' AND table_schema = 'public'
-    `);
-    const columnNames = cols.rows.map((r: any) => r.column_name);
-    
-    if (!columnNames.includes('author')) {
-      await query(`ALTER TABLE products ADD COLUMN author TEXT`);
-    }
-    if (!columnNames.includes('cover_image')) {
-      await query(`ALTER TABLE products ADD COLUMN cover_image TEXT`);
-    }
-    if (!columnNames.includes('file_path')) {
-      await query(`ALTER TABLE products ADD COLUMN file_path TEXT`);
-    }
-    if (!columnNames.includes('description')) {
-      await query(`ALTER TABLE products ADD COLUMN description TEXT`);
-    }
-    if (!columnNames.includes('category')) {
-      await query(`ALTER TABLE products ADD COLUMN category VARCHAR(50) NOT NULL DEFAULT 'service'`);
-    }
-    if (!columnNames.includes('created_at')) {
-      await query(`ALTER TABLE products ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`);
-    }
-  }
-  
-  // Create orders table for M-Pesa payments
+  // Add columns missing from older deployments (never DROP anything).
+  await query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS author TEXT`);
+  await query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS description TEXT`);
+  await query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS cover_image TEXT`);
+  await query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS file_path TEXT`);
+  await query(
+    `ALTER TABLE products ADD COLUMN IF NOT EXISTS category VARCHAR(50) NOT NULL DEFAULT 'service'`
+  );
+  await query(
+    `ALTER TABLE products ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
+  );
+
+  // --- orders --------------------------------------------------------------
   await query(`
     CREATE TABLE IF NOT EXISTS orders (
       id SERIAL PRIMARY KEY,
@@ -105,9 +100,65 @@ export async function initDb() {
       status VARCHAR(20) NOT NULL DEFAULT 'pending',
       download_token TEXT,
       download_expires_at TIMESTAMP,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      provider TEXT NOT NULL DEFAULT 'ncba',
+      provider_ref TEXT,
+      receipt TEXT,
+      poll_token TEXT,
+      raw_callback JSONB
+    )
+  `);
+  // NCBA cutover columns — added to existing deployments without data loss.
+  await query(
+    `ALTER TABLE orders ADD COLUMN IF NOT EXISTS provider TEXT NOT NULL DEFAULT 'ncba'`
+  );
+  await query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS provider_ref TEXT`);
+  await query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS receipt TEXT`);
+  await query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS poll_token TEXT`);
+  await query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS raw_callback JSONB`);
+  // Legacy rows (pre-cutover) were M-PESA orders; correct their provider label.
+  // Safe for NCBA rows: they never populate the legacy columns.
+  await query(
+    `UPDATE orders SET provider = 'mpesa'
+     WHERE provider = 'ncba'
+       AND (checkout_request_id IS NOT NULL OR mpesa_receipt IS NOT NULL)`
+  );
+  await query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS orders_provider_ref_uniq
+    ON orders(provider_ref) WHERE provider_ref IS NOT NULL
+  `);
+
+  // --- webhook_events --------------------------------------------------------
+  await query(`
+    CREATE TABLE IF NOT EXISTS webhook_events (
+      id SERIAL PRIMARY KEY,
+      trans_id TEXT UNIQUE,
+      payload JSONB,
+      matched_order_id INT,
+      verified BOOLEAN NOT NULL DEFAULT false,
+      created_at TIMESTAMP DEFAULT now()
     )
   `);
 }
+
+let migratePromise: Promise<void> | null = null;
+
+/**
+ * Memoized migration runner: executes once per process; concurrent callers
+ * share the same promise (no races). On failure the memo is cleared so the
+ * next call retries.
+ */
+export function migrate(): Promise<void> {
+  if (!migratePromise) {
+    migratePromise = runMigrations().catch((err) => {
+      migratePromise = null;
+      throw err;
+    });
+  }
+  return migratePromise;
+}
+
+/** Back-compat alias for pre-cutover routes; identical to `migrate()`. */
+export const initDb = migrate;
 
 export default pool;

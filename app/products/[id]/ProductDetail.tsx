@@ -20,11 +20,13 @@ export default function ProductDetail({ id }: { id: string }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [paying, setPaying] = useState(false);
   const [payStatus, setPayStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
-  const [checkoutRequestId, setCheckoutRequestId] = useState("");
+  const [orderId, setOrderId] = useState<number | null>(null);
+  const [pollToken, setPollToken] = useState("");
   const [hasFile, setHasFile] = useState(false);
   const [serviceDetails, setServiceDetails] = useState("");
-  const [mpesaReceipt, setMpesaReceipt] = useState("");
+  const [receipt, setReceipt] = useState("");
   const [downloadToken, setDownloadToken] = useState("");
+  const [downloadUrl, setDownloadUrl] = useState("");
   const [pollCount, setPollCount] = useState(0);
   const [error, setError] = useState("");
 
@@ -48,7 +50,7 @@ export default function ProductDetail({ id }: { id: string }) {
   const MAX_POLLS = 40; // ~2 minutes (40 * 3 seconds)
 
   useEffect(() => {
-    if (!checkoutRequestId || payStatus !== "pending") return;
+    if (!orderId || !pollToken || payStatus !== "pending") return;
 
     const interval = setInterval(() => {
       setPollCount((c) => {
@@ -60,16 +62,17 @@ export default function ProductDetail({ id }: { id: string }) {
         return newCount;
       });
 
-      fetch(`${API_URL}/mpesa/status/${checkoutRequestId}`)
+      fetch(`${API_URL}/payments/status/${orderId}?token=${encodeURIComponent(pollToken)}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.status === "paid") {
             setPayStatus("success");
-            setDownloadToken(data.downloadToken);
+            setDownloadToken(data.downloadToken || "");
+            setDownloadUrl(data.downloadUrl || "");
             setHasFile(data.hasFile);
-            setMpesaReceipt(data.mpesaReceipt || "");
+            setReceipt(data.receipt || "");
             if (!data.hasFile) {
-              setServiceDetails(data.details || "You will receive a confirmation shortly.");
+              setServiceDetails("You will receive a confirmation call/email shortly with next steps.");
             }
             clearInterval(interval);
           } else if (data.status === "failed") {
@@ -83,7 +86,7 @@ export default function ProductDetail({ id }: { id: string }) {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [checkoutRequestId, payStatus, API_URL]);
+  }, [orderId, pollToken, payStatus, API_URL]);
 
   const handlePayment = async () => {
     if (!phoneNumber || !product) return;
@@ -93,19 +96,19 @@ export default function ProductDetail({ id }: { id: string }) {
     setError("");
 
     try {
-      const res = await fetch(`${API_URL}/mpesa/stkpush`, {
+      const res = await fetch(`${API_URL}/payments/stkpush`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phoneNumber,
-          amount: product.price,
           productId: product.id,
         }),
       });
 
       const data = await res.json();
       if (data.success) {
-        setCheckoutRequestId(data.checkoutRequestId);
+        setOrderId(data.orderId);
+        setPollToken(data.pollToken);
       } else {
         setPayStatus("failed");
         setError(data.error || "Payment failed");
@@ -191,13 +194,13 @@ export default function ProductDetail({ id }: { id: string }) {
                   <p className="text-green-700 mb-4">
                     Your purchase is complete. Click below to download your product.
                   </p>
-                  {mpesaReceipt && (
+                  {receipt && (
                     <p className="text-sm text-green-600 mb-4">
-                      M-Pesa Receipt: <strong>{mpesaReceipt}</strong>
+                      Receipt: <strong>{receipt}</strong>
                     </p>
                   )}
                   <a
-                    href={`${API_URL}/download/${downloadToken}`}
+                    href={downloadUrl || `${API_URL}/download/${downloadToken}`}
                     className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
                   >
                     <Download size={18} />
@@ -214,9 +217,9 @@ export default function ProductDetail({ id }: { id: string }) {
                   <p className="text-green-700 mb-4">
                     Thank you for your purchase. Your payment has been received.
                   </p>
-                  {mpesaReceipt && (
+                  {receipt && (
                     <p className="text-sm text-green-600 mb-4">
-                      M-Pesa Receipt: <strong>{mpesaReceipt}</strong>
+                      Receipt: <strong>{receipt}</strong>
                     </p>
                   )}
                   <div className="bg-white border border-green-200 rounded-lg p-4 mb-4">
@@ -237,7 +240,7 @@ export default function ProductDetail({ id }: { id: string }) {
                   <div className="text-center py-4">
                     <Loader className="animate-spin text-gold-600 mx-auto mb-3" size={24} />
                     <p className="text-navy-600">
-                      M-Pesa prompt sent to your phone. Please complete payment...
+                      Mobile money prompt sent to your phone. Please complete payment...
                     </p>
                     {pollCount >= MAX_POLLS && (
                       <div className="mt-4">
@@ -260,7 +263,7 @@ export default function ProductDetail({ id }: { id: string }) {
                   <>
                     <div className="mb-4">
                       <label className="block text-xs font-semibold text-navy-700 uppercase tracking-wider mb-2">
-                        M-Pesa Phone Number
+                        Mobile Money Phone Number
                       </label>
                       <input
                         type="tel"
@@ -270,7 +273,7 @@ export default function ProductDetail({ id }: { id: string }) {
                         className="w-full bg-white border border-navy-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gold-400"
                       />
                       <p className="text-xs text-navy-400 mt-1">
-                        Enter your M-Pesa registered number
+                        Enter your mobile money registered number
                       </p>
                     </div>
 
@@ -293,7 +296,7 @@ export default function ProductDetail({ id }: { id: string }) {
                           Processing...
                         </>
                       ) : (
-                        <>Pay with M-Pesa</>
+                        <>Pay via NCBA mobile money</>
                       )}
                     </button>
                   </>

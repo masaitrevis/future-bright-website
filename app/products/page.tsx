@@ -82,7 +82,7 @@ export default function ProductsPage() {
               </p>
               <code className="bg-amber-100 px-2 py-1 rounded text-xs text-amber-900">{API_URL}</code>
               <p className="text-amber-600 text-sm mt-3">
-                Admin login: <strong>admin</strong> / <strong>admin123</strong> at <Link href="/admin" className="underline">/admin</Link>
+                Please try again shortly.
               </p>
             </div>
           )}

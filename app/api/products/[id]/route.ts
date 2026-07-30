@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { query, initDb } from "@/db/client";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET(
   request: Request,
@@ -23,9 +24,9 @@ export async function GET(
 
     return NextResponse.json(result.rows[0]);
   } catch (error: any) {
-    console.error("[API /products/:id] GET Error:", error.message);
+    console.error("[API /products/:id] GET Error:", error instanceof Error ? error.message : "unknown error");
     return NextResponse.json(
-      { error: "Failed to fetch product", detail: error.message },
+      { error: "Failed to fetch product" },
       { status: 500 }
     );
   }
@@ -35,6 +36,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const unauthorized = requireAdmin(request);
+  if (unauthorized) return unauthorized;
+
   try {
     await initDb();
     const id = parseInt(params.id);
@@ -49,9 +53,9 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("[API /products/:id] DELETE Error:", error.message);
+    console.error("[API /products/:id] DELETE Error:", error instanceof Error ? error.message : "unknown error");
     return NextResponse.json(
-      { error: "Failed to delete product", detail: error.message },
+      { error: "Failed to delete product" },
       { status: 500 }
     );
   }
@@ -61,6 +65,9 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const unauthorized = requireAdmin(request);
+  if (unauthorized) return unauthorized;
+
   try {
     await initDb();
     const id = parseInt(params.id);
@@ -92,9 +99,9 @@ export async function PUT(
 
     return NextResponse.json(result.rows[0]);
   } catch (error: any) {
-    console.error("[API /products/:id] PUT Error:", error.message);
+    console.error("[API /products/:id] PUT Error:", error instanceof Error ? error.message : "unknown error");
     return NextResponse.json(
-      { error: "Failed to update product", detail: error.message },
+      { error: "Failed to update product" },
       { status: 500 }
     );
   }

@@ -3,3 +3,7 @@ dist/
 node_modules/
 *.log
 .env.local
+.env
+.env.*
+!.env.example
+*.tsbuildinfo

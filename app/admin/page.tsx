@@ -28,6 +28,7 @@ interface Product {
 
 export default function AdminPage() {
   const [token, setToken] = useState("");
+  const [expiresAt, setExpiresAt] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
@@ -67,13 +68,43 @@ export default function AdminPage() {
       });
   }, [token, API_URL]);
 
+  const clearSession = useCallback(() => {
+    setToken("");
+    setExpiresAt("");
+    setLoggedIn(false);
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_token_expires");
+    localStorage.removeItem("token");
+  }, []);
+
   useEffect(() => {
     const savedToken = localStorage.getItem("admin_token") || localStorage.getItem("token");
-    if (savedToken) {
+    const savedExpiry = localStorage.getItem("admin_token_expires") || "";
+    // Drop expired sessions immediately.
+    if (savedToken && savedExpiry && Date.parse(savedExpiry) > Date.now()) {
       setToken(savedToken);
+      setExpiresAt(savedExpiry);
       setLoggedIn(true);
+    } else {
+      localStorage.removeItem("admin_token");
+      localStorage.removeItem("admin_token_expires");
+      localStorage.removeItem("token");
     }
   }, []);
+
+  // Auto-logout as soon as the stored session expires.
+  useEffect(() => {
+    if (!loggedIn || !expiresAt) return;
+    const check = () => {
+      if (Date.parse(expiresAt) <= Date.now()) {
+        clearSession();
+        setMessage("Session expired. Please log in again.");
+      }
+    };
+    check();
+    const timer = setInterval(check, 15000);
+    return () => clearInterval(timer);
+  }, [loggedIn, expiresAt, clearSession]);
 
   useEffect(() => {
     if (loggedIn) fetchProducts();
@@ -88,10 +119,12 @@ export default function AdminPage() {
         body: JSON.stringify({ username, password }),
       });
       const data = await res.json();
-      if (data.token) {
+      if (data.token && data.expiresAt) {
         setToken(data.token);
+        setExpiresAt(data.expiresAt);
         setLoggedIn(true);
         localStorage.setItem("admin_token", data.token);
+        localStorage.setItem("admin_token_expires", data.expiresAt);
       } else {
         setMessage("Invalid credentials");
       }
@@ -101,10 +134,7 @@ export default function AdminPage() {
   };
 
   const handleLogout = () => {
-    setToken("");
-    setLoggedIn(false);
-    localStorage.removeItem("admin_token");
-    localStorage.removeItem("token");
+    clearSession();
   };
 
   const resetForm = () => {
@@ -148,7 +178,10 @@ export default function AdminPage() {
     try {
       const res = await fetch(`${API_URL}/products`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           title,
           author,
@@ -159,6 +192,12 @@ export default function AdminPage() {
           file_path: fileBase64,
         }),
       });
+      if (res.status === 401) {
+        clearSession();
+        setMessage("Session expired. Please log in again.");
+        setSubmitting(false);
+        return;
+      }
       const data = await res.json();
       if (data.id) {
         setMessage("Product created successfully!");
@@ -178,7 +217,15 @@ export default function AdminPage() {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      await fetch(`${API_URL}/products/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_URL}/products/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.status === 401) {
+        clearSession();
+        setMessage("Session expired. Please log in again.");
+        return;
+      }
       fetchProducts();
     } catch {
       setMessage("Failed to delete");
