@@ -61,6 +61,10 @@ function pickField(obj: Record<string, unknown>, keys: string[]): string {
   return "";
 }
 
+/** Coerce value to string, treating null/undefined as empty. */
+const s = (v: unknown): string =>
+  v === null || v === undefined ? "" : String(v);
+
 // ---------------------------------------------------------------------------
 // OAuth token (Basic auth) with in-process caching.
 // ---------------------------------------------------------------------------
@@ -301,9 +305,6 @@ export async function queryStkPush(
 // Push Notification Hash
 // ---------------------------------------------------------------------------
 
-const s = (v: unknown): string =>
-  v === null || v === undefined ? "" : String(v);
-
 /**
  * NCBA notification hash.
  *
@@ -314,7 +315,7 @@ const s = (v: unknown): string =>
  *   + TransID
  *   + TransTime
  *   + TransAmount
- *   + CreditAccount
+ *   + CreditAccount (or BusinessShortCode from payload)
  *   + BillRefNumber
  *   + Mobile
  *   + Name
@@ -328,20 +329,19 @@ const s = (v: unknown): string =>
  *      ↓
  *   Base64 encode the hexadecimal string
  *
- * IMPORTANT:
- * The NCBA hash uses the CREDIT ACCOUNT, not the
- * BusinessShortCode.
+ * NOTE: We now prefer BusinessShortCode from the payload (what NCBA sends)
+ * and fall back to NCBA_CREDIT_ACCOUNT env var only when absent.
  */
 export function computeNotifyHash(
   fields: Record<string, unknown>
 ): string {
   const secret = requiredEnv("NCBA_NOTIFY_SECRET");
 
-  // This is the NCBA internal credit account that receives
-  // the funds. It is NOT the public M-Pesa BusinessShortCode.
-  const creditAccount = requiredEnv(
-    "NCBA_CREDIT_ACCOUNT"
-  );
+  // Use BusinessShortCode from payload if present (NCBA sends this),
+  // otherwise fall back to the internal credit account from env.
+  const creditAccount =
+    s(fields["BusinessShortCode"]) ||
+    requiredEnv("NCBA_CREDIT_ACCOUNT");
 
   const raw =
     secret +
