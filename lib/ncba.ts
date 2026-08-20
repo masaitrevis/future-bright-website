@@ -430,12 +430,19 @@ export function verifyNotify(
   }
 
   // Hash verification.
+   // Hash verification.
   const expectedHash = computeNotifyHash(fields);
 
   if (
     !providedHash ||
     !safeEqual(providedHash, expectedHash)
   ) {
+    console.error("=== NCBA HASH DEBUG ===");
+    console.error("Expected hash:", expectedHash);
+    console.error("Provided hash:", providedHash);
+    console.error("Secret length:", requiredEnv("NCBA_NOTIFY_SECRET").length);
+    console.error("Credit account:", requiredEnv("NCBA_CREDIT_ACCOUNT"));
+    console.error("=======================");
     return {
       ok: false,
       reason: "hash mismatch",
