@@ -85,15 +85,36 @@ export async function getNcbaToken(): Promise<string> {
     "utf8"
   ).toString("base64");
 
-  const res = await fetch(
-    `${baseUrl()}/payments/api/v1/auth/token`,
-    {
-      method: "GET",
+  const url = `${baseUrl()}/payments/api/v1/auth/token`;
+  
+  // DEBUG: Log exactly what we're sending
+  console.log("[ncba] Token request URL:", url);
+  console.log("[ncba] Token request username:", username);
+  console.log("[ncba] Token request password length:", password.length);
+  console.log("[ncba] Token request auth header:", `Basic ${basic.slice(0, 30)}...`);
+
+  // Try GET first (per STK Push PDF page 3)
+  let res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Basic ${basic}`,
+    },
+  });
+
+  console.log("[ncba] GET token response status:", res.status);
+
+  // If GET fails with 401, try POST (per QR Code PDF page 6)
+  if (res.status === 401) {
+    console.log("[ncba] GET failed, trying POST...");
+    res = await fetch(url, {
+      method: "POST",
       headers: {
         Authorization: `Basic ${basic}`,
+        "Content-Type": "application/json",
       },
-    }
-  );
+    });
+    console.log("[ncba] POST token response status:", res.status);
+  }
 
   if (!res.ok) {
     const body = await res.text().catch(() => "");
@@ -430,19 +451,12 @@ export function verifyNotify(
   }
 
   // Hash verification.
-   // Hash verification.
   const expectedHash = computeNotifyHash(fields);
 
   if (
     !providedHash ||
     !safeEqual(providedHash, expectedHash)
   ) {
-    console.error("=== NCBA HASH DEBUG ===");
-    console.error("Expected hash:", expectedHash);
-    console.error("Provided hash:", providedHash);
-    console.error("Secret length:", requiredEnv("NCBA_NOTIFY_SECRET").length);
-    console.error("Credit account:", requiredEnv("NCBA_CREDIT_ACCOUNT"));
-    console.error("=======================");
     return {
       ok: false,
       reason: "hash mismatch",
